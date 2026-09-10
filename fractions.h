@@ -3,9 +3,9 @@
  * Copyright ©2026 王家祺(Jacky Velarde Z.) <3594929067@qq.com>
  *
  * This file is released under the GPLv2 (or later, at your option).
- *  
+ *
  * All Rights Reserved.
- * 
+ *
  */
 
 #ifndef FRACTIONS_H
@@ -48,6 +48,18 @@ namespace mfc { //mfc, aka.Math for C++.
 		type num = 0;//numerator
 		type den = 1;//denominator
 	public:
+		template<typename TypesForSolve = float>
+		TypesForSolve solve() const noexcept
+		{
+			if (den == 0)
+			{
+				throw std::invalid_argument("Denominator cannot be zero");
+			}
+			else
+			{
+				return static_cast<TypesForSolve>(num) / den;
+			}
+		}
 		fraction(type n, type d) : num(n), den(d) {
 			if (d == 0) {
 				throw std::invalid_argument("Denominator cannot be zero");
@@ -66,9 +78,6 @@ namespace mfc { //mfc, aka.Math for C++.
 			num = temp1.num;
 			den = temp1.den;
 		}
-		double solve() const;
-		float sm_solve() const;
-		long double large_solve() const;
 		fraction pow_int(int a) const;
 		fraction rec() const;//Basically makes the fraction upside down.
 		fraction& abs(); //This modifys the fraction.
@@ -221,13 +230,7 @@ namespace mfc { //mfc, aka.Math for C++.
 		}
 		bool operator <= (const fraction& other) const noexcept
 		{
-			if (this->num / this->den != other.num / other.den)
-			{
-				return this->num / this->den <= other.num / other.den;
-			}
-			else {
-				return (this->num % this->den) * other.den <= (other.num % other.den) * this->den;
-			}
+			return *this < other or *this == other;
 		}
 		bool operator != (const fraction& other) const noexcept
 		{
@@ -241,43 +244,31 @@ namespace mfc { //mfc, aka.Math for C++.
 		}
 		bool operator > (const fraction& other) const noexcept
 		{
-			if (this->num / this->den != other.num / other.den)
-			{
-				return this->num / this->den > other.num / other.den;
-			}
-			else {
-				return (this->num % this->den) * other.den > (other.num % other.den) * this->den;
-			}
+			return other < *this;
 		}
 		bool operator >= (const fraction& other) const noexcept
 		{
-			if (this->num / this->den != other.num / other.den)
-			{
-				return this->num / this->den >= other.num / other.den;
-			}
-			else {
-				return (this->num % this->den) * other.den >= (other.num % other.den) * this->den;
-			}
+			return other < *this or other == *this;;
 		}
-		bool operator < (const type& other) const noexcept
+		bool operator < (const type& other)  noexcept
 		{
-			return this->sm_solve() < other;
+			return this->solve() < other;
 		}
-		bool operator != (const type& other) const noexcept
+		bool operator != (const type& other)  noexcept
 		{
-			return this->sm_solve() != other;
+			return this->solve() != other;
 		}
-		bool operator <= (const type& other) const noexcept
+		bool operator <= (const type& other)  noexcept
 		{
-			return this->sm_solve() <= other;
+			return this->solve() <= other;
 		}
-		bool operator > (const type& other) const noexcept
+		bool operator > (const type& other)  noexcept
 		{
-			return this->sm_solve() > other;
+			return this->solve() > other;
 		}
-		bool operator >= (const type& other) const noexcept
+		bool operator >= (const type& other)  noexcept
 		{
-			return this->sm_solve() >= other;
+			return this->solve() >= other;
 		}
 		bool operator < (const double& other) const noexcept
 		{
@@ -339,9 +330,9 @@ namespace mfc { //mfc, aka.Math for C++.
 				return (this->num % this->den) * other.den == (other.num % other.den) * this->den;
 			}
 		}
-		bool operator == (const type& other) const noexcept
+		bool operator == (const type& other)  noexcept
 		{
-			return this->sm_solve() == other;
+			return this->solve() == other;
 		}
 		bool operator == (const double& other) const noexcept
 		{
@@ -354,18 +345,6 @@ namespace mfc { //mfc, aka.Math for C++.
 			};
 		}
 	};
-	double fraction::solve() const//Returns double
-	{
-		return static_cast<double>(num) / den;
-	}
-	float fraction::sm_solve() const//Returns float,sm--small
-	{
-		return static_cast<float>(num) / den;
-	}
-	long double fraction::large_solve() const//Returns long double(Might not often be used)
-	{
-		return static_cast<long double>(num) / den;
-	}
 	fraction fraction::rec() const
 	{
 		if (num == 0)
@@ -435,13 +414,11 @@ namespace mfc { //mfc, aka.Math for C++.
 //8/26/2026,Optimized the algorithm.
 //8/31/2026 Added using type = int;
 //9/4/2026 Added some functions and removed useless stuff(Compare function).
-//9/5/2026 Small Changes
+//9/7/2026 Changed Solve into templates to make it better
+//9/8/2026 Optimized the compare thing.
 
-// Verision: 2.0.0
+// Verision: 3.0.0
 // Welcome to apply to Xiamen No.6 High School
 // If there are any problems with my code, feel free to email me at: 3594929067@qq.com
 // I will reply if im not in school
-//=============================================================================
-
-
-
+//============================================================================
