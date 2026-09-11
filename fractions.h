@@ -97,6 +97,21 @@ namespace mfc { //mfc, aka.Math for C++.
 			swap(other);
 			return *this;
 		}
+		fraction operator % (const fraction& other) const noexcept
+		{
+			type lcm = den / gcd(den, other.den) * other.den;
+			if (this->num * lcm > other.num * lcm)
+			{
+				fraction Temp((this->num * lcm) % (other.num * lcm), lcm);
+				return Temp.simplify();
+			}
+			else
+			{
+				fraction Temp((other.num * lcm) % (this->num * lcm), lcm);
+				return Temp.simplify();
+			}
+
+		}
 		fraction operator - () const noexcept
 		{
 			fraction Temp(-num, den);
@@ -109,17 +124,6 @@ namespace mfc { //mfc, aka.Math for C++.
 			fraction result(new_num, lcm);
 			return result.simplify();
 		}
-		fraction operator + (const type& other) const noexcept
-		{
-			fraction result(num + other * den, den);
-			return result.simplify();
-		}
-		fraction operator + (const double& other) const noexcept
-		{
-			fraction temp(other);
-			fraction temp2(this->num * temp.den + temp.num * this->den, this->den * temp.den);
-			return temp2.simplify();
-		}
 		fraction operator - (const fraction& other) const noexcept
 		{
 			type lcm = den / gcd(den, other.den) * other.den;
@@ -127,32 +131,10 @@ namespace mfc { //mfc, aka.Math for C++.
 			fraction result(new_num, lcm);
 			return result.simplify();
 		}
-		fraction operator - (const type& other) const noexcept
-		{
-			fraction result(num - other * den, den);
-			return result.simplify();
-		}
-		fraction operator - (const double& other) const noexcept
-		{
-			fraction temp(other);
-			fraction temp2(this->num * temp.den - temp.num * this->den, this->den * temp.den);
-			return temp2.simplify();
-		}
 		fraction operator * (const fraction& other) const
 		{
 			fraction result(num * other.num, den * other.den);
 			return result.simplify();
-		}
-		fraction operator * (const type& other) const
-		{
-			fraction result(num * other, den);
-			return result.simplify();
-		}
-		fraction operator * (const double& other) const
-		{
-			fraction temp(other);
-			fraction temp2(this->num * temp.num, this->den * temp.den);
-			return temp2.simplify();
 		}
 		fraction operator / (const fraction& other) const
 		{
@@ -169,12 +151,6 @@ namespace mfc { //mfc, aka.Math for C++.
 				fraction result(num, den * other);
 				return result.simplify();
 			}
-		}
-		fraction operator / (const double& other) const noexcept
-		{
-			fraction temp(other);
-			fraction temp2(this->num * temp.den, this->den * temp.num);
-			return temp2.simplify();
 		}
 		fraction& operator+=(const fraction& other) noexcept {
 			*this = *this + other;
@@ -250,26 +226,6 @@ namespace mfc { //mfc, aka.Math for C++.
 		{
 			return other < *this or other == *this;;
 		}
-		bool operator < (const type& other)  noexcept
-		{
-			return this->solve() < other;
-		}
-		bool operator != (const type& other)  noexcept
-		{
-			return this->solve() != other;
-		}
-		bool operator <= (const type& other)  noexcept
-		{
-			return this->solve() <= other;
-		}
-		bool operator > (const type& other)  noexcept
-		{
-			return this->solve() > other;
-		}
-		bool operator >= (const type& other)  noexcept
-		{
-			return this->solve() >= other;
-		}
 		bool operator < (const double& other) const noexcept
 		{
 			if (this->num / this->den != static_cast<int>(other))
@@ -329,10 +285,6 @@ namespace mfc { //mfc, aka.Math for C++.
 			else {
 				return (this->num % this->den) * other.den == (other.num % other.den) * this->den;
 			}
-		}
-		bool operator == (const type& other)  noexcept
-		{
-			return this->solve() == other;
 		}
 		bool operator == (const double& other) const noexcept
 		{
@@ -416,6 +368,7 @@ namespace mfc { //mfc, aka.Math for C++.
 //9/4/2026 Added some functions and removed useless stuff(Compare function).
 //9/7/2026 Changed Solve into templates to make it better
 //9/8/2026 Optimized the compare thing.
+//9/11/2026 Delated some useless stuff.
 
 // Verision: 3.0.0
 // Welcome to apply to Xiamen No.6 High School
