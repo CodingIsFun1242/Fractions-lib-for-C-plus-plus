@@ -100,16 +100,8 @@ namespace mfc { //mfc, aka.Math for C++.
 		fraction operator % (const fraction& other) const noexcept
 		{
 			type lcm = den / gcd(den, other.den) * other.den;
-			if (this->num * (lcm / this->den) > other.num * (lcm / other.den))
-			{
-				fraction Temp((this->num * (lcm / this->den)) % (other.num * (lcm / other.den)), lcm);
-				return Temp.simplify();
-			}
-			else
-			{
-				fraction Temp((other.num * (lcm / other.den)) % (this->num * (lcm / this->den)), lcm);
-				return Temp.simplify();
-			}
+			fraction Temp((this->num * (lcm / this->den)) % (other.num * (lcm/other.den)), lcm);
+			return Temp.simplify();
 
 		}
 		fraction operator - () const noexcept
