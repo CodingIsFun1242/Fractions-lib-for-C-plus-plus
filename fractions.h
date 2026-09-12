@@ -100,14 +100,14 @@ namespace mfc { //mfc, aka.Math for C++.
 		fraction operator % (const fraction& other) const noexcept
 		{
 			type lcm = den / gcd(den, other.den) * other.den;
-			if (this->num * lcm > other.num * lcm)
+			if (this->num * (lcm / this->den) > other.num * (lcm / other.den))
 			{
-				fraction Temp((this->num * lcm) % (other.num * lcm), lcm);
+				fraction Temp((this->num * (lcm / this->den)) % (other.num * (lcm / other.den)), lcm);
 				return Temp.simplify();
 			}
 			else
 			{
-				fraction Temp((other.num * lcm) % (this->num * lcm), lcm);
+				fraction Temp((other.num * (lcm / other.den)) % (this->num * (lcm / this->den)), lcm);
 				return Temp.simplify();
 			}
 
@@ -369,6 +369,7 @@ namespace mfc { //mfc, aka.Math for C++.
 //9/7/2026 Changed Solve into templates to make it better
 //9/8/2026 Optimized the compare thing.
 //9/11/2026 Delated some useless stuff.
+//9/12/2026 Fixed some stuff
 
 // Verision: 3.0.0
 // Welcome to apply to Xiamen No.6 High School
