@@ -10,7 +10,6 @@
 
 #ifndef FRACTIONS_H
 #define FRACTIONS_H
-using type = int; //Change int to whatever you need
 
 
 #include <cstdlib>
@@ -43,13 +42,14 @@ inline static int Decimal_count(double in) {
 }
 
 namespace mfc { //mfc, aka.Math for C++.
+	using type = int; //Change int to whatever you need
 	class fraction {
 	private:
 		type num = 0;//numerator
 		type den = 1;//denominator
 	public:
 		template<typename TypesForSolve = float>
-		TypesForSolve solve() const noexcept
+		TypesForSolve solve() const
 		{
 			if (den == 0)
 			{
@@ -78,10 +78,36 @@ namespace mfc { //mfc, aka.Math for C++.
 			num = temp1.num;
 			den = temp1.den;
 		}
+		fraction(long double n) : num(0), den(1)
+		{
+			fraction temp1(n * std::pow(10, Decimal_count(n)), std::pow(10, Decimal_count(n)));
+			temp1 = temp1.simplify();
+			num = temp1.num;
+			den = temp1.den;
+		}
 		fraction pow_int(int a) const;
 		fraction rec() const;//Basically makes the fraction upside down.
 		fraction& abs(); //This modifys the fraction.
 		fraction rtrn_abs() const; //This returns the result instead of modifying the fraction itself.
+		fraction sqrt() const
+		{
+			if (num < 0)
+			{
+				throw std::invalid_argument("this is not gonna work");
+			}
+			else
+			{
+				return fraction(std::sqrtf(num * den)) / den;
+			}
+		}
+		fraction nroot(int n) const
+		{
+			if (n == 0)
+				throw std::invalid_argument("N can't be 0");
+			if (num < 0 && n % 2 != 0)
+				return -fraction(std::pow(-num / static_cast<double>(den), 1.0 / n));
+			return fraction(std::pow(num / static_cast<double>(den), 1.0 / n));
+		}
 		fraction simplify() const
 		{
 			type g = gcd(std::abs(num), std::abs(den));
@@ -100,7 +126,7 @@ namespace mfc { //mfc, aka.Math for C++.
 		fraction operator % (const fraction& other) const noexcept
 		{
 			type lcm = den / gcd(den, other.den) * other.den;
-			fraction Temp((this->num * (lcm / this->den)) % (other.num * (lcm/other.den)), lcm);
+			fraction Temp((this->num * (lcm / this->den)) % (other.num * (lcm / other.den)), lcm);
 			return Temp.simplify();
 
 		}
@@ -137,12 +163,68 @@ namespace mfc { //mfc, aka.Math for C++.
 		{
 			if (other == 0)
 			{
-				throw std::invalid_argument("It ain't a smart choice to use 0 as a divisor");
+				throw std::invalid_argument("Divisor can't be zero");
 			}
 			else {
 				fraction result(num, den * other);
 				return result.simplify();
 			}
+		}
+		//For the other side
+		friend fraction operator + (const double& a, const fraction& b) noexcept
+		{
+			fraction Temp(a);
+			return Temp + b;
+		}
+		friend fraction operator - (const double& a, const fraction& b) noexcept
+		{
+			fraction Temp(a);
+			return Temp - b;
+		}
+		friend fraction operator * (const double& a, const fraction& b) noexcept
+		{
+			fraction Temp(a);
+			return Temp * b;
+		}
+		friend fraction operator / (const double& a, const fraction& b) noexcept
+		{
+			fraction Temp(a);
+			return Temp / b;
+		}
+		friend fraction operator + (const type& a, const fraction& b) noexcept
+		{
+			fraction Temp(a);
+			return Temp + b;
+		}
+		friend fraction operator - (const type& a, const fraction& b) noexcept
+		{
+			fraction Temp(a);
+			return Temp - b;
+		}
+		friend fraction operator * (const type& a, const fraction& b) noexcept
+		{
+			fraction Temp(a);
+			return Temp * b;
+		}
+		friend fraction operator / (const type& a, const fraction& b) noexcept
+		{
+			fraction Temp(a);
+			return Temp / b;
+		}
+		fraction operator + (const type& other) const noexcept
+		{
+			fraction Temp(other);
+			return *this + Temp;
+		}
+		fraction operator - (const type& other) const noexcept
+		{
+			fraction Temp(other);
+			return *this - Temp;
+		}
+		fraction operator * (const type& other) const noexcept
+		{
+			fraction Temp(other);
+			return *this * Temp;
 		}
 		fraction& operator+=(const fraction& other) noexcept {
 			*this = *this + other;
@@ -175,7 +257,14 @@ namespace mfc { //mfc, aka.Math for C++.
 
 		friend std::ostream& operator<<(std::ostream& os, const fraction& a) noexcept
 		{
-			os << a.num << "/" << a.den;
+			if (a.num % a.den == 0)
+			{
+				os << a.num / a.den;
+			}
+			else
+			{
+				os << a.num << "/" << a.den;
+			}
 			return os;
 		}
 		friend std::istream& operator>>(std::istream& is, fraction& a) noexcept
@@ -288,6 +377,19 @@ namespace mfc { //mfc, aka.Math for C++.
 				return this->num % this->den == (other - static_cast<int>(other)) * this->den;
 			};
 		}
+		//The other side
+		friend bool operator <  (const double& a, const fraction& b) noexcept { return b > a; }
+		friend bool operator <= (const double& a, const fraction& b) noexcept { return b >= a; }
+		friend bool operator >  (const double& a, const fraction& b) noexcept { return b < a; }
+		friend bool operator >= (const double& a, const fraction& b) noexcept { return b <= a; }
+		friend bool operator == (const double& a, const fraction& b) noexcept { return b == a; }
+		friend bool operator != (const double& a, const fraction& b) noexcept { return b != a; }
+		friend bool operator <  (const type& a, const fraction& b) noexcept { return fraction(a) < b; }
+		friend bool operator <= (const type& a, const fraction& b) noexcept { return fraction(a) <= b; }
+		friend bool operator >  (const type& a, const fraction& b) noexcept { return fraction(a) > b; }
+		friend bool operator >= (const type& a, const fraction& b) noexcept { return fraction(a) >= b; }
+		friend bool operator == (const type& a, const fraction& b) noexcept { return fraction(a) == b; }
+		friend bool operator != (const type& a, const fraction& b) noexcept { return fraction(a) != b; }
 	};
 	fraction fraction::rec() const
 	{
@@ -344,6 +446,7 @@ namespace mfc { //mfc, aka.Math for C++.
 		return fraction(a, b);
 	}
 }
+
 #endif
 
 
@@ -362,6 +465,7 @@ namespace mfc { //mfc, aka.Math for C++.
 //9/8/2026 Optimized the compare thing.
 //9/11/2026 Delated some useless stuff.
 //9/12/2026 Fixed some stuff
+//9/23/2026 Added calculation (But upside down) and also added nroot but because of presition problems, it can't replace sqrt
 
 // Verision: 3.0.0
 // Welcome to apply to Xiamen No.6 High School
