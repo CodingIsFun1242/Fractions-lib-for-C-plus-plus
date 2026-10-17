@@ -42,7 +42,7 @@ inline static int Decimal_count(double in) {
 }
 
 namespace mfc { //mfc, aka.Math for C++.
-	using type = int; //Change int to whatever you need
+	using type = long long; //Change int to whatever you need
 	class fraction {
 	private:
 		type num = 0;//numerator
@@ -70,8 +70,17 @@ namespace mfc { //mfc, aka.Math for C++.
 			}
 		}
 		fraction() : num(0), den(1) {}
-		fraction(type n) : num(n), den(1) {}
+		fraction(long long n) : num(n), den(1) {}
+		fraction(int n) : num(n), den(1) {}
+		fraction(short n) : num(n), den(1) {}
 		fraction(double n) : num(0), den(1)
+		{
+			fraction temp1(n * std::pow(10, Decimal_count(n)), std::pow(10, Decimal_count(n)));
+			temp1 = temp1.simplify();
+			num = temp1.num;
+			den = temp1.den;
+		}
+		fraction(float n) : num(0), den(1)
 		{
 			fraction temp1(n * std::pow(10, Decimal_count(n)), std::pow(10, Decimal_count(n)));
 			temp1 = temp1.simplify();
@@ -378,18 +387,18 @@ namespace mfc { //mfc, aka.Math for C++.
 			};
 		}
 		//The other side
-		friend bool operator <  (const double& a, const fraction& b) noexcept { return b > a; }
-		friend bool operator <= (const double& a, const fraction& b) noexcept { return b >= a; }
-		friend bool operator >  (const double& a, const fraction& b) noexcept { return b < a; }
-		friend bool operator >= (const double& a, const fraction& b) noexcept { return b <= a; }
-		friend bool operator == (const double& a, const fraction& b) noexcept { return b == a; }
-		friend bool operator != (const double& a, const fraction& b) noexcept { return b != a; }
-		friend bool operator <  (const type& a, const fraction& b) noexcept { return fraction(a) < b; }
-		friend bool operator <= (const type& a, const fraction& b) noexcept { return fraction(a) <= b; }
-		friend bool operator >  (const type& a, const fraction& b) noexcept { return fraction(a) > b; }
-		friend bool operator >= (const type& a, const fraction& b) noexcept { return fraction(a) >= b; }
-		friend bool operator == (const type& a, const fraction& b) noexcept { return fraction(a) == b; }
-		friend bool operator != (const type& a, const fraction& b) noexcept { return fraction(a) != b; }
+		template<typename T = int>
+		friend bool operator <  (const T& a, const fraction& b) noexcept { return fraction(a) < b; }
+		template<typename T = int>
+		friend bool operator <= (const T& a, const fraction& b) noexcept { return fraction(a) <= b; }
+		template<typename T = int>
+		friend bool operator >  (const T& a, const fraction& b) noexcept { return fraction(a) > b; }
+		template<typename T = int>
+		friend bool operator >= (const T& a, const fraction& b) noexcept { return fraction(a) >= b; }
+		template<typename T = int>
+		friend bool operator == (const T& a, const fraction& b) noexcept { return fraction(a) == b; }
+		template<typename T = int>
+		friend bool operator != (const T& a, const fraction& b) noexcept { return fraction(a) != b; }
 	};
 	fraction fraction::rec() const
 	{
@@ -402,11 +411,11 @@ namespace mfc { //mfc, aka.Math for C++.
 			return temp.simplify();
 		}
 	}
-	fraction fraction::pow_int(int a) const
+	fraction fraction::pow_int(type a) const
 	{
 		if (a > 0)
 		{
-			fraction temp(static_cast<int>(std::pow(num, a)), static_cast<int>(std::pow(den, a)));
+			fraction temp(static_cast<type>(std::pow(num, a)), static_cast<type>(std::pow(den, a)));
 			return temp.simplify();
 		}
 		if (a == 0)
@@ -466,8 +475,9 @@ namespace mfc { //mfc, aka.Math for C++.
 //9/11/2026 Delated some useless stuff.
 //9/12/2026 Fixed some stuff
 //9/23/2026 Added calculation (But upside down) and also added nroot but because of presition problems, it can't replace sqrt
-
-// Verision: 3.0.0
+//10,17/2026 Changed some logic and fixed noexcept usage
+// 
+// Verision: 3.5.0 (Stable)
 // Welcome to apply to Xiamen No.6 High School
 // If there are any problems with my code, feel free to email me at: 3594929067@qq.com
 // I will reply if im not in school
