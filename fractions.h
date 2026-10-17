@@ -475,7 +475,7 @@ namespace mfc { //mfc, aka.Math for C++.
 //9/11/2026 Delated some useless stuff.
 //9/12/2026 Fixed some stuff
 //9/23/2026 Added calculation (But upside down) and also added nroot but because of presition problems, it can't replace sqrt
-//10,17/2026 Changed some logic and fixed noexcept usage
+//10/17/2026 Changed some logic and fixed noexcept usage
 // 
 // Verision: 3.5.0 (Stable)
 // Welcome to apply to Xiamen No.6 High School
